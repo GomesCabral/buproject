@@ -2,82 +2,85 @@
 <!-- mark -->
 <?php
 
-$firstName = '';
-$lastName = '';
+// user data
+$name = '';
 $email = '';
 $passWorda = '';
 $passWordb = '';
 
 // messages
-$noFirstName = '';
-$noLastName = '';
+$noName = '';
 $noEmail = '';
 $badEmail = '';
+$emptyPassword = '';
 $passwordNoMatch = '';
 $success = 'Thanks for registering!';
 
-$errors = [];
+// conn variables
+
+$error = true;
+
+$messages = array(&$noName, &$noEmail, &$badEmail, &$emptyPassword, &$passwordNoMatch);
 
 if (isset($_POST['submitBtn'])) {
     $error = false;
 
-    $firstName = trim(strip_tags($_POST['firstName']));
-    if (empty($firstName)) {
-        $errors['firstName'] = "Please enter your first name.";
-        $error = true;
-    };
-
-    $lastName = trim(strip_tags($_POST['lastName']));
-    if (empty($lastName)) {
-        $errors['lastName'] = "Please enter your last name.";
+    $name = trim(strip_tags($_POST['name']));
+    if (empty($name)) {
+        $noName = "Please enter your name.";
         $error = true;
     };
 
     $cleanEmail = trim(strip_tags($_POST['email']));
     if (!filter_var($cleanEmail, FILTER_VALIDATE_EMAIL)) {
-        $errors['cleanEmail'] = "Please enter a valid email address.";
+        $badEmail = "Please enter a valid email address.";
         $error = true;
     };
 
     if (!filter_var($cleanEmail, FILTER_SANITIZE_EMAIL)) {
-        $errors['cleanEmail'] = "Please enter a valid email address.";
+        $badEmail = "Please enter a valid email address.";
         $error = true;
     }
 
     if ((strlen($cleanEmail)) < 8 || (strlen($cleanEmail)) > 50) {
-        $errors['cleanEmail'] = "Email address must be at least 8 characters long.";
+        $badEmail = "Email address must be at least 8 characters long.";
         $error = true;
     };
 
     $passWorda = trim($_POST['passWorda']);
     if (empty($passWorda)) {
-        $errors['passWorda'] = "Please enter your password.";
+        $emptyPassword = "Please enter your password.";
         $error = true;
     };
 
     $passWordb = trim($_POST['passWordb']);
     if ($passWordb != $passWorda) {
-        $errors['passWord2b'] = "Passwords do not match.";
+        $passwordNoMatch = "Passwords do not match.";
         $error = true;
     } else {
         $userPassword = password_hash($passWorda, PASSWORD_DEFAULT);
     };
 
-    // all ok, insert new user
-    $conn = mysqli_connect('localhost', 'root', 'root', 'movies');
-    if (!$conn) {
-        echo 'No connection';
-    } else {
-        $query = "INSERT INTO users (first_name, last_name, email, password)
-                VALUES ('$firstName', '$lastName', '$email', '$userPassword')";
-        $result = mysqli_query($conn, $query);
-        if (!$result) {
-            mysqli_close($conn);
+    if (!$error) {
+        // all ok, insert new user
+        $conn = mysqli_connect('localhost', 'root', 'root', 'movies');
+        if (!$conn) {
+            echo 'No connection';
         } else {
-            echo "Thanks for registering.";
-        }
-        mysqli_close($conn);
-    };
+            $query = "INSERT INTO users (name, email, password)
+                VALUES ('$name', '$cleanEmail', '$userPassword')";
+            $result = mysqli_query($conn, $query);
+            if (!$result) {
+                echo 'Query Problem';
+                mysqli_close($conn);
+            } else {
+                session_start();
+                setcookie("$cleanEmail", time() + 120);
+                echo "Thanks for registering!";
+            }
+            mysqli_close($conn);
+        };
+    }
 };
 
 ?>
@@ -89,7 +92,7 @@ if (isset($_POST['submitBtn'])) {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./formstyle.css">
+    <link rel="stylesheet" href="./style.css">
 
     <title>Register</title>
 </head>
@@ -107,27 +110,27 @@ if (isset($_POST['submitBtn'])) {
         <div class="row">
             <div class="col-3"></div>
             <div class="column">
-                <div class="errorMsg"><span><?php ($result) ? $success : 'Query Problem'; ?></span></div>
+
                 <form class="_form" action="" method="post">
-                    <div class="input"><input type="text" name="firstName" value="<?php echo $firstName ?>" placeholder="first name"></div>
-                    <div class="input"><input type="text" name="lastName" value="<?php echo $lastName ?>" placeholder="last name"></div>
+                    <div class="input"><input type="text" name="name" value="<?php echo $name ?>" placeholder="Your name"></div>
                     <div class="input"><input type="email" name="email" id="1" value="<?php echo $email ?>" placeholder="email must be between 8 & 50 characters."></div>
                     <div class="input"><input type="password" name="passWorda" id="2" placeholder="password"></div>
                     <div class="input"><input type="password" name="passWordb" id="3" placeholder="confirm password"></div>
-
-
-
                     <input class="submit" type="submit" name="submitBtn" value="Submit">
                 </form>
 
             </div>
             <div class="column">
-                <div class="errorMsg"><span><?php echo (empty($firstName)) ? $noFirstName : ''; ?></span></div>
-                <div class="errorMsg"><span><?php echo (empty($lastName)) ? $noLastName : ''; ?></span></div>
-                <div class="errorMsg"><span><?php echo (empty($cleanEmail)) ? $noEmail : ''; ?></span></div>
-                <div class="errorMsg"><span><?php echo (empty($cleanEmail)) ? $badEmail : ''; ?></span></div>
-
-
+                <div class="errorMsg">
+                    <span>
+                        <?php
+                        if ($error)
+                            foreach ($messages as $message) {
+                                echo "$message <br>";
+                            }
+                        ?>
+                    </span>
+                </div>
             </div>
             <div class="col-3"></div>
         </div>
