@@ -21,27 +21,23 @@ $conn = mysqli_connect('localhost', 'root', 'root', 'movies');
 if (!$conn) {
     echo 'No connection';
 } else {
-    // get directors to populate select options
+    // get directors to populate form select options
     $query = $q_directors;
     $d_result = mysqli_query($conn, $q_directors);
     if (!$d_result) {
         mysqli_close($conn);
     } else {
         $directors = mysqli_fetch_all($d_result, MYSQLI_ASSOC);
+        mysqli_close($conn);
     }
 };
-
-
-$q_insert_movie = "INSERT INTO movie (title, description, poster, release_date, director_id)
-                    VALUES ('$title', '$description', '$poster', '$release_date', '$director_id')";
-
 
 // check if user is logged in already:
 session_start();
 if (!$_SESSION["newsession"]) {
     echo "Please log in or register.";
 } else {
-
+    //  check user has clicked submit
     if (isset($_POST['submitBtn'])) {
         $error = false;
 
@@ -52,9 +48,16 @@ if (!$_SESSION["newsession"]) {
         $release_date = $_POST['release_date'];
         $director_id = $_POST['director_id'];
 
+        //  movie insert query
+        $q_insert_movie = "INSERT INTO movie (title, description, poster, release_date, director_id)
+                    VALUES ($title, $description, $poster, $release_date, $director_id)";
+
+
+
         // check if form is completed
-        if (!empty($director_id) || !empty($title) || !empty($description) || !empty($poster) || !empty($release_date)) {
+        if (empty($director_id) || empty($title) || empty($description) || empty($poster) || empty($release_date)) {
             $error = true;
+            echo "No data";
         }
 
         if (!$error) {
@@ -64,10 +67,9 @@ if (!$_SESSION["newsession"]) {
                 echo 'No connection';
             } else {
 
-
                 // insert the movie
                 $query = $q_insert_movie;
-                echo $query;
+
                 $result = mysqli_query($conn, $query);
                 if (!$result) {
                     echo "Query Error";
@@ -76,9 +78,9 @@ if (!$_SESSION["newsession"]) {
                     setcookie("added_movie" . $title, time() + 120);
                     echo "Upload successful!";
                 }
-                mysqli_close($conn);
             };
         }
+        // mysqli_close($conn);
     };
 };
 ?>
@@ -112,11 +114,11 @@ if (!$_SESSION["newsession"]) {
             ?>
         </select>
         <label>Enter movie title</label>
-        <input type="text" name="title" id="">
+        <input type="text" name="title" id="title">
         <label for="">Enter poster URL</label>
-        <input type="text" name="poster" id="">
+        <input type="text" name="poster" id="poster">
         <label for="">Release Date</label>
-        <input type="date" name="release_date" id="">
+        <input type="date" name="release_date" id="release_date">
         <label>Enter movie description</label>
         <textarea id="" name="description" rows="5" cols="50"></textarea>
         <input class=" submit" type="submit" name="submitBtn" value="submit">
