@@ -1,4 +1,4 @@
-<!-- registration / login page -->
+<!-- registration page -->
 <!-- mark -->
 <?php
 
@@ -64,7 +64,7 @@ if (isset($_POST['submitBtn'])) {
     };
 
     // all ok, insert new user
-    $conn = mysqli_connect('localhost', 'root', 'root', 'spotify');
+    $conn = mysqli_connect('localhost', 'root', 'root', 'movies');
     if (!$conn) {
         echo 'No connection';
     } else {
@@ -95,7 +95,13 @@ if (isset($_POST['submitBtn'])) {
 </head>
 
 <body>
-    <?php require_once('./navbar.php'); ?>
+    <d class="registerWrapper">
+        <div class="row">
+            <div class="col">
+                <h3>Register as New User</h3>
+            </div>
+        </div>
+    </d>
 
     <div class="container">
         <div class="row">
@@ -109,13 +115,7 @@ if (isset($_POST['submitBtn'])) {
                     <div class="input"><input type="password" name="passWorda" id="2" placeholder="password"></div>
                     <div class="input"><input type="password" name="passWordb" id="3" placeholder="confirm password"></div>
 
-                    <div class="checkBoxWrapper">
-                        <div class="chkBoxLeftCol"><input class="checkBox" type="checkbox" name="checkBox" id="checker">
-                        </div>
-                        <div class="chkBoxRightCol">
-                            <p>Subscribe to our newsletter.</p>
-                        </div>
-                    </div>
+
 
                     <input class="submit" type="submit" name="submitBtn" value="Submit">
                 </form>
