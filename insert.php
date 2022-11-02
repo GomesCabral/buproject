@@ -23,7 +23,6 @@ if (!$conn) {
 } else {
     // get directors to populate select options
     $query = $q_directors;
-    echo $query;
     $d_result = mysqli_query($conn, $q_directors);
     if (!$d_result) {
         mysqli_close($conn);
@@ -65,24 +64,13 @@ if (!$_SESSION["newsession"]) {
                 echo 'No connection';
             } else {
 
-                // get director_id from user director choice
-                $query = $q_director_id;
-                var_dump($query);
-
-                $d_result = mysqli_query($conn, $query);
-                if (!$result) {
-                    mysqli_close($conn);
-                } else {
-
-                    $director_id = mysqli_fetch_all($d_result, MYSQLI_ASSOC);
-                    echo $director_id;
-                }
 
                 // insert the movie
                 $query = $q_insert_movie;
-                var_dump($query);
+                echo $query;
                 $result = mysqli_query($conn, $query);
                 if (!$result) {
+                    echo "Query Error";
                     mysqli_close($conn);
                 } else {
                     setcookie("added_movie" . $title, time() + 120);
