@@ -54,7 +54,7 @@ if (!$_SESSION["newsession"]) {
         $director_id = $_POST['director_id'];
 
         // check if form is completed
-        if (!empty($director_id) || !empty($title) || !empty($description) || !empty($poster) || !empty($release_date)) {
+        if (empty($director_id) || empty($title) || empty($description) || empty($poster) || empty($release_date)) {
             $error = true;
         }
 
