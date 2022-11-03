@@ -6,7 +6,7 @@
 $title = '';
 $description = '';
 $poster = '';
-$release_date = Date('Y mm dd');
+$release_date = Date('Y-m-d');
 $director = '';
 $director_id = 0;
 
@@ -50,7 +50,7 @@ if (!$_SESSION["newsession"]) {
 
         //  movie insert query
         $q_insert_movie = "INSERT INTO movie (title, description, poster, release_date, director_id)
-                    VALUES ($title, $description, $poster, $release_date, $director_id)";
+                    VALUES ('$title', '$description', '$poster', '$release_date', '$director_id')";
 
 
 
@@ -72,6 +72,7 @@ if (!$_SESSION["newsession"]) {
 
                 $result = mysqli_query($conn, $query);
                 if (!$result) {
+
                     echo "Query Error";
                     mysqli_close($conn);
                 } else {
